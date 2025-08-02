@@ -38,10 +38,18 @@ filter "system:linux"
 
     files
     {
+        -- X11 sources (optional: you can keep or switch)
         "src/x11_init.c",
         "src/x11_monitor.c",
         "src/x11_window.c",
         "src/xkb_unicode.c",
+
+        -- Wayland sources
+        "src/wl_init.c",
+        "src/wl_monitor.c",
+        "src/wl_window.c",
+
+
         "src/posix_time.c",
         "src/posix_module.c",
         "src/posix_poll.c",
@@ -54,9 +62,78 @@ filter "system:linux"
 
     defines
     {
-        "_GLFW_X11"
-        
+        "_GLFW_X11",
+        "_GLFW_WAYLAND",
+        "_GLFW_HAS_GLX",
+        "_GLFW_HAS_EGL"
     }
+
+    -- Premake pseudocode example
+    prebuildcommands {
+        '{MKDIR} %{wks.location}/generated',
+
+        -- Already included protocols ...
+        'wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml %{wks.location}/generated/xdg-shell-client-protocol.h',
+        'wayland-scanner private-code /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml %{wks.location}/generated/xdg-shell-client-protocol-code.h',
+
+        'wayland-scanner client-header /usr/share/wayland-protocols/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml %{wks.location}/generated/xdg-decoration-unstable-v1-client-protocol.h',
+        'wayland-scanner private-code /usr/share/wayland-protocols/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml %{wks.location}/generated/xdg-decoration-unstable-v1-client-protocol-code.h',
+
+        'wayland-scanner client-header /usr/share/wayland-protocols/stable/viewporter/viewporter.xml %{wks.location}/generated/viewporter-client-protocol.h',
+        'wayland-scanner private-code /usr/share/wayland-protocols/stable/viewporter/viewporter.xml %{wks.location}/generated/viewporter-client-protocol-code.h',
+
+        -- ✅ Relative Pointer
+        'wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml %{wks.location}/generated/relative-pointer-unstable-v1-client-protocol.h',
+        'wayland-scanner private-code /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml %{wks.location}/generated/relative-pointer-unstable-v1-client-protocol-code.h',
+
+        -- pointer-constraints
+        'wayland-scanner client-header /usr/share/wayland-protocols/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml %{wks.location}/generated/pointer-constraints-unstable-v1-client-protocol.h',
+        'wayland-scanner private-code /usr/share/wayland-protocols/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml %{wks.location}/generated/pointer-constraints-unstable-v1-client-protocol-code.h',
+
+        -- fractional-scale
+        'wayland-scanner client-header /usr/share/wayland-protocols/staging/fractional-scale/fractional-scale-v1.xml %{wks.location}/generated/fractional-scale-v1-client-protocol.h',
+        'wayland-scanner private-code /usr/share/wayland-protocols/staging/fractional-scale/fractional-scale-v1.xml %{wks.location}/generated/fractional-scale-v1-client-protocol-code.h',
+
+
+        'wayland-scanner client-header /usr/share/wayland-protocols/staging/xdg-activation/xdg-activation-v1.xml %{wks.location}/generated/xdg-activation-v1-client-protocol.h',
+        'wayland-scanner private-code /usr/share/wayland-protocols/staging/xdg-activation/xdg-activation-v1.xml %{wks.location}/generated/xdg-activation-v1-client-protocol-code.h',
+
+        'wayland-scanner client-header /usr/share/wayland-protocols/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml %{wks.location}/generated/idle-inhibit-unstable-v1-client-protocol.h',
+        'wayland-scanner private-code /usr/share/wayland-protocols/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml %{wks.location}/generated/idle-inhibit-unstable-v1-client-protocol-code.h',
+
+
+        'wayland-scanner code /usr/share/wayland/wayland.xml %{wks.location}/generated/wayland-client-protocol-code.h',
+
+        'wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml %{wks.location}/generated/xdg-shell-client-protocol.h',
+        'wayland-scanner private-code /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml %{wks.location}/generated/xdg-shell-client-protocol-code.h',
+
+    }
+
+
+
+
+
+    links {
+        "wayland-client",
+        "wayland-cursor",
+        "wayland-egl",
+        "X11",
+        "Xrandr",
+        "GL",
+        "m",
+        "dl"
+    }
+
+    includedirs {
+        "%{wks.location}/generated"
+    }
+
+    files {
+        "%{wks.location}/generated/xdg-shell-client-protocol.h",
+        "%{wks.location}/generated/xdg-shell-client-protocol-code.h"
+    }
+    
+
 
 filter "system:windows"
     systemversion "latest"
