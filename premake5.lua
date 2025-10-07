@@ -62,8 +62,6 @@ filter "system:linux"
 
     defines
     {
-        "_GLFW_X11",
-        "_GLFW_WAYLAND",
         "_GLFW_HAS_GLX",
         "_GLFW_HAS_EGL"
     }
