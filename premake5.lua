@@ -62,8 +62,8 @@ filter "system:linux"
 
     defines
     {
-        "_GLFW_HAS_GLX",
-        "_GLFW_HAS_EGL"
+        "_GLFW_X11",
+        "_GLFW_WAYLAND"
     }
 
     -- Premake pseudocode example
@@ -100,7 +100,7 @@ filter "system:linux"
         'wayland-scanner private-code /usr/share/wayland-protocols/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml %{wks.location}/generated/idle-inhibit-unstable-v1-client-protocol-code.h',
 
 
-        'wayland-scanner code /usr/share/wayland/wayland.xml %{wks.location}/generated/wayland-client-protocol-code.h',
+        'wayland-scanner private-code /usr/share/wayland/wayland.xml %{wks.location}/generated/wayland-client-protocol-code.h',
 
         'wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml %{wks.location}/generated/xdg-shell-client-protocol.h',
         'wayland-scanner private-code /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml %{wks.location}/generated/xdg-shell-client-protocol-code.h',
